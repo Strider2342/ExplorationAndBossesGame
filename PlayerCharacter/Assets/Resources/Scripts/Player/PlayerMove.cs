@@ -6,19 +6,29 @@ using UnityEngine;
 [Serializable]
 public class PlayerMove
 {
+    // Scripts
+    private RigidbodyExtension rbExt;
+
     // Objects
     public GameObject player;
     public GameObject character;
+    public GameObject collider;
     public GameObject cameraBaseH;
 
     public float movementSpeed = 10.0f;
     public float rotationSpeed = 5.0f;
+    public float jumpSpeed = 25000.0f;
 
     public void Init(GameObject player, GameObject character, GameObject cameraBaseH)
     {
         this.player = player;
         this.character = character;
         this.cameraBaseH = cameraBaseH;
+
+        this.collider = character.transform.FindChild("Collider").gameObject;
+
+        rbExt = new RigidbodyExtension();
+        rbExt.Init(player.GetComponent<Rigidbody>());
     }
 
     public void Move()
@@ -45,9 +55,9 @@ public class PlayerMove
 
     public void Jump()
     {
-        if (Input.GetAxis("Jump") != 0f)
+        if (Input.GetButtonDown("Jump") && rbExt.isGrounded(collider.GetComponent<Collider>()))
         {
-            Debug.Log("Jump");
+            player.GetComponent<Rigidbody>().AddForce(character.transform.up * jumpSpeed);
         }
     }
 
