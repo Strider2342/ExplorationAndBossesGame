@@ -5,13 +5,15 @@ using UnityEngine;
 public class RigidbodyExtension
 {
     public Rigidbody rigidBody;
+    public Collider collider;
 
-    public void Init(Rigidbody rigidBody)
+    public void init(Rigidbody rigidBody, Collider collider)
     {
         this.rigidBody = rigidBody;
+        this.collider = collider;
     }
 
-    public bool isGrounded(Collider collider)
+    public bool isGrounded()
     {
         float groundDistance = collider.bounds.extents.y;
         return Physics.Raycast(rigidBody.gameObject.transform.position, -Vector3.up, groundDistance + 0.1f);

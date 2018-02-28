@@ -16,10 +16,12 @@ public class PlayerMove
     public GameObject cameraBaseH;
 
     public float movementSpeed = 10.0f;
+    public float sprintMultiplier = 2.5f;
+    public float midAirMultiplier = 0.5f;
     public float rotationSpeed = 5.0f;
     public float jumpSpeed = 25000.0f;
 
-    public void Init(GameObject player, GameObject character, GameObject cameraBaseH)
+    public void init(GameObject player, GameObject character, GameObject cameraBaseH)
     {
         this.player = player;
         this.character = character;
@@ -28,42 +30,43 @@ public class PlayerMove
         this.collider = character.transform.FindChild("Collider").gameObject;
 
         rbExt = new RigidbodyExtension();
-        rbExt.Init(player.GetComponent<Rigidbody>());
+        rbExt.init(player.GetComponent<Rigidbody>(), this.collider.GetComponent<Collider>());
     }
 
-    public void Move()
+    public void move()
     {
-        float velocity = Input.GetAxis("Vertical");
-
-        if (velocity != 0.0f)
+        if (getVelocity() != Vector3.zero)
         {
-            Rotate();
-            player.transform.position += character.transform.forward * velocity * movementSpeed * Time.deltaTime;
+            rotate();
+            player.transform.position += getVelocity() * Time.deltaTime;
         }
     }
 
-    public void MoveSide()
+    public void jump()
     {
-        float velocity = Input.GetAxis("Horizontal");
-
-        if (velocity != 0.0f)
+        if (Input.GetButtonDown("Jump") && rbExt.isGrounded())
         {
-            Rotate();
-            player.transform.position += character.transform.right * velocity * movementSpeed * Time.deltaTime;
+            Vector3 force = character.transform.up * jumpSpeed;
+            player.GetComponent<Rigidbody>().AddForce(force);
         }
     }
 
-    public void Jump()
-    {
-        if (Input.GetButtonDown("Jump") && rbExt.isGrounded(collider.GetComponent<Collider>()))
-        {
-            player.GetComponent<Rigidbody>().AddForce(character.transform.up * jumpSpeed);
-        }
-    }
-
-    public void Rotate()
+    public void rotate()
     {
         Quaternion previousRotation = character.transform.localRotation;
-        character.transform.localRotation = Quaternion.Slerp(previousRotation, cameraBaseH.transform.localRotation, rotationSpeed * Time.deltaTime);
+        character.transform.localRotation = Quaternion.Slerp(previousRotation, Quaternion.LookRotation(getVelocity()), rotationSpeed * Time.deltaTime);
+    }
+
+
+    Vector3 getVelocity()
+    {
+        Vector3 velocity = new Vector3(Input.GetAxis("Horizontal"), 0.0f, Input.GetAxis("Vertical"));
+        velocity = cameraBaseH.transform.TransformDirection(velocity);
+        velocity.Normalize();
+        velocity *= movementSpeed;
+        if (!rbExt.isGrounded()) { velocity *= midAirMultiplier; }
+        if (Input.GetButtonDown("Sprint")) { velocity *= sprintMultiplier; }
+
+        return velocity;
     }
 }

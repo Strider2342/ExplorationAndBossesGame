@@ -16,13 +16,13 @@ public class PlayerLook
     public float verticalMax = 80f;
     public float verticalMin = -30f;
 
-    public void Init(GameObject cameraBaseH, GameObject cameraBaseV)
+    public void init(GameObject cameraBaseH, GameObject cameraBaseV)
     {
         this.cameraBaseH = cameraBaseH;
         this.cameraBaseV = cameraBaseV;
     }
 
-    public void LookRotation()
+    public void lookRotation()
     {
         Quaternion horizontalCameraRotation = this.cameraBaseH.transform.localRotation;
         Quaternion verticalCameraRotation = this.cameraBaseV.transform.localRotation;
@@ -35,10 +35,10 @@ public class PlayerLook
         verticalCameraRotation.z = 0;
 
         this.cameraBaseH.transform.localRotation = horizontalCameraRotation;
-        this.cameraBaseV.transform.localRotation = ClampVertical(verticalCameraRotation);
+        this.cameraBaseV.transform.localRotation = clampVertical(verticalCameraRotation);
     }
 
-    Quaternion ClampVertical(Quaternion q)
+    Quaternion clampVertical(Quaternion q)
     {
         q.x /= q.w;
         q.y /= q.w;

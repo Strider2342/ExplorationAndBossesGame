@@ -17,15 +17,14 @@ public class PlayerController : MonoBehaviour
         move = new PlayerMove();
         look = new PlayerLook();
 
-        move.Init(this.gameObject, this.character, this.cameraBaseH);
-        look.Init(this.cameraBaseH, this.cameraBaseV);
+        move.init(this.gameObject, this.character, this.cameraBaseH);
+        look.init(this.cameraBaseH, this.cameraBaseV);
     }
 
     void Update()
     {
-        look.LookRotation();
-        move.Move();
-        move.MoveSide();
-        move.Jump();
+        look.lookRotation();
+        move.move();
+        move.jump();
     }
 }
